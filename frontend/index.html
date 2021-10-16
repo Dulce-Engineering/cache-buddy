@@ -8,8 +8,10 @@
     </style>
     <script type="module">
       import Client_Cache_Mem from "/Client_Cache_Mem.js";
+      import Client_Cache_Local from "/Client_Cache_Local.js";
 
       const cache = new Client_Cache_Mem();
+      const local_cache = new Client_Cache_Local();
 
       window.onload = Main;
       function Main()
@@ -17,7 +19,7 @@
         document.getElementById("exec_btn").addEventListener("click", Exec_Btn_Click);
         document.getElementById("exec2_btn").addEventListener("click", Exec2_Btn_Click);
         document.getElementById("exec3_btn").addEventListener("click", Exec3_Btn_Click);
-        document.getElementById("exec4_btn").addEventListener("click", Exec2_Btn_Click);
+        document.getElementById("exec4_btn").addEventListener("click", Exec4_Btn_Click);
         document.getElementById("exec5_btn").addEventListener("click", Exec2_Btn_Click);
         document.getElementById("exec6_btn").addEventListener("click", Exec2_Btn_Click);
       }
@@ -40,6 +42,13 @@
       {
         const key = "someFunction." + a;
         const res = await cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      async function Some_Function_Client_Local_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await local_cache.use(key, () => Some_Function(a), 10000);
         return res;
       }
 
@@ -70,6 +79,15 @@
         const fn_res = await Some_Function_Client_Mem_Cache(2000000000);
         const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
         document.getElementById("exec3_res").innerText = text;
+      }
+
+      async function Exec4_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec4_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Local_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec4_res").innerText = text;
       }
     </script>
   </head>
