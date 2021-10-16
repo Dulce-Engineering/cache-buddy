@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <style>
+      li
+      {
+        margin-bottom: 10px;
+      }
+    </style>
+    <script type="module">
+      import Client_Cache_Mem from "/Client_Cache_Mem.js";
+
+      const cache = new Client_Cache_Mem();
+
+      window.onload = Main;
+      function Main()
+      {
+        document.getElementById("exec_btn").addEventListener("click", Exec_Btn_Click);
+        document.getElementById("exec2_btn").addEventListener("click", Exec2_Btn_Click);
+        document.getElementById("exec3_btn").addEventListener("click", Exec3_Btn_Click);
+        document.getElementById("exec4_btn").addEventListener("click", Exec2_Btn_Click);
+        document.getElementById("exec5_btn").addEventListener("click", Exec2_Btn_Click);
+        document.getElementById("exec6_btn").addEventListener("click", Exec2_Btn_Click);
+      }
+
+      async function Some_Function(a)
+      {
+        const http_res = await fetch("someFunction?a=" + a);
+        const json_res = await http_res.json();
+        return json_res;
+      }
+
+      async function Some_Function_Server_Mem_Cache(a)
+      {
+        const http_res = await fetch("someFunctionCached?a=" + a);
+        const json_res = await http_res.json();
+        return json_res;
+      }
+
+      async function Some_Function_Client_Mem_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      // Events ===================================================================================
+
+      async function Exec_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec_res").innerText = "Executing...";
+        const fn_res = await Some_Function(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec_res").innerText = text;
+      }
+
+      async function Exec2_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec2_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Server_Mem_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec2_res").innerText = text;
+      }
+
+      async function Exec3_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec3_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Mem_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec3_res").innerText = text;
+      }
+    </script>
+  </head>
+  <body>
+    <ul>
+      <li>Call backend function. 
+        <button id="exec_btn">Execute</button> 
+        <span id="exec_res"></span>
+      </li>
+      <li>Call backend function with server-side memory cache. 
+        <button id="exec2_btn">Execute</button> 
+        <span id="exec2_res"></span>
+      </li>
+      <li>Call backend function with client-side memory cache. 
+        <button id="exec3_btn">Execute</button> 
+        <span id="exec3_res"></span>
+      </li>
+      <li>Call backend function with client-side Local Storage cache. 
+        <button id="exec4_btn">Execute</button> 
+        <span id="exec4_res"></span>
+      </li>
+      <li>Call backend function with client-side Session Storage cache. 
+        <button id="exec5_btn">Execute</button> 
+        <span id="exec5_res"></span>
+      </li>
+      <li>Call backend function with client-side IndexedDb cache. 
+        <button id="exec6_btn">Execute</button> 
+        <span id="exec6_res"></span>
+      </li>
+    </ul>
+  </body>
+</html>

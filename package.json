@@ -1,0 +1,31 @@
+{
+  "name": "cache-buddy",
+  "version": "1.0.0",
+  "description": "Javascript class to assist with frontend and backend caching. No dependencies.",
+  "main": "backend/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dulce-Engineering/cache-buddy.git"
+  },
+  "keywords": [
+    "javascript",
+    "cache",
+    "caching",
+    "memory",
+    "class",
+    "frontend",
+    "backend"
+  ],
+  "author": "Dulce Engineering",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dulce-Engineering/cache-buddy/issues"
+  },
+  "homepage": "https://github.com/Dulce-Engineering/cache-buddy#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
