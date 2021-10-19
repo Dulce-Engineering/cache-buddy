@@ -6,22 +6,43 @@
         margin-bottom: 10px;
       }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase.js"></script>
     <script type="module">
       import Client_Cache_Mem from "/Client_Cache_Mem.js";
       import Client_Cache_Local from "/Client_Cache_Local.js";
+      import Client_Cache_Session from "/Client_Cache_Session.js";
+      import Client_Cache_Db from "/Client_Cache_Db.js";
+      import Client_Cache_Firestore from "/Client_Cache_Firestore.js";
+      import Client_Cache_Realtime from "/Client_Cache_Realtime.js";
+      import Fb_Config from "./config.js";
 
       const cache = new Client_Cache_Mem();
       const local_cache = new Client_Cache_Local();
+      const session_cache = new Client_Cache_Session();
+      const db_cache = new Client_Cache_Db();
+      const firestore_cache = new Client_Cache_Firestore();
+      const realtime_cache = new Client_Cache_Realtime();
 
       window.onload = Main;
-      function Main()
+      async function Main()
       {
+        await db_cache.open();
+
+        const firebase_app_name = "de-cms";
+        firebase.initializeApp(Fb_Config, firebase_app_name);
+        const app = firebase.app(firebase_app_name);
+        const auth = firebase.auth(app);
+        await auth.signInAnonymously();
+        firestore_cache.open(app);
+
         document.getElementById("exec_btn").addEventListener("click", Exec_Btn_Click);
         document.getElementById("exec2_btn").addEventListener("click", Exec2_Btn_Click);
         document.getElementById("exec3_btn").addEventListener("click", Exec3_Btn_Click);
         document.getElementById("exec4_btn").addEventListener("click", Exec4_Btn_Click);
-        document.getElementById("exec5_btn").addEventListener("click", Exec2_Btn_Click);
-        document.getElementById("exec6_btn").addEventListener("click", Exec2_Btn_Click);
+        document.getElementById("exec5_btn").addEventListener("click", Exec5_Btn_Click);
+        document.getElementById("exec6_btn").addEventListener("click", Exec6_Btn_Click);
+        document.getElementById("exec7_btn").addEventListener("click", Exec7_Btn_Click);
+        document.getElementById("exec8_btn").addEventListener("click", Exec8_Btn_Click);
       }
 
       async function Some_Function(a)
@@ -38,6 +59,8 @@
         return json_res;
       }
 
+      // Client Cached Functions ==================================================================
+
       async function Some_Function_Client_Mem_Cache(a)
       {
         const key = "someFunction." + a;
@@ -49,6 +72,34 @@
       {
         const key = "someFunction." + a;
         const res = await local_cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      async function Some_Function_Client_Session_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await session_cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      async function Some_Function_Client_Db_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await db_cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      async function Some_Function_Client_Firestore_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await firestore_cache.use(key, () => Some_Function(a), 10000);
+        return res;
+      }
+
+      async function Some_Function_Client_Realtime_Cache(a)
+      {
+        const key = "someFunction." + a;
+        const res = await realtime_cache.use(key, () => Some_Function(a), 10000);
         return res;
       }
 
@@ -89,6 +140,42 @@
         const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
         document.getElementById("exec4_res").innerText = text;
       }
+
+      async function Exec5_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec5_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Session_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec5_res").innerText = text;
+      }
+
+      async function Exec6_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec6_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Db_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec6_res").innerText = text;
+      }
+
+      async function Exec7_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec7_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Firestore_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec7_res").innerText = text;
+      }
+
+      async function Exec8_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec8_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Client_Realtime_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec8_res").innerText = text;
+      }
     </script>
   </head>
   <body>
@@ -116,6 +203,14 @@
       <li>Call backend function with client-side IndexedDb cache. 
         <button id="exec6_btn">Execute</button> 
         <span id="exec6_res"></span>
+      </li>
+      <li>Call backend function with client-side Firebase Firestore cache. 
+        <button id="exec7_btn">Execute</button> 
+        <span id="exec7_res"></span>
+      </li>
+      <li>Call backend function with client-side Firebase Realtime cache. 
+        <button id="exec8_btn">Execute</button> 
+        <span id="exec8_res"></span>
       </li>
     </ul>
   </body>

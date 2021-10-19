@@ -1,17 +1,17 @@
 import Client_Cache from "./Client_Cache.js";
 
-class Client_Cache_Local extends Client_Cache
+class Client_Cache_Session extends Client_Cache
 {
   constructor(config)
   {
     super(config);
   }
 
-  LocalStorage_Get(key)
+  SessionStorage_Get(key)
   {
     let res;
 
-    const entry_str = localStorage.getItem(key);
+    const entry_str = sessionStorage.getItem(key);
     if (entry_str)
     {
       res = JSON.parse(entry_str);
@@ -23,7 +23,7 @@ class Client_Cache_Local extends Client_Cache
   async hasData(key)
   {
     let res = false;
-    const entry = this.LocalStorage_Get(key);
+    const entry = this.SessionStorage_Get(key);
 
     if (entry && entry.expireTimeMillis > Date.now())
     {
@@ -37,7 +37,7 @@ class Client_Cache_Local extends Client_Cache
   {
     let res;
 
-    const entry = this.LocalStorage_Get(key);
+    const entry = this.SessionStorage_Get(key);
     if (entry)
     {
       res = entry.data;
@@ -51,17 +51,17 @@ class Client_Cache_Local extends Client_Cache
     const expireTimeMillis = Date.now() + expiryMillis;
     const entry = { data, expireTimeMillis, execMillis };
     const entry_str = JSON.stringify(entry)
-    localStorage.setItem(key, entry_str);
+    sessionStorage.setItem(key, entry_str);
 
     return true;
   }
   
   async delete(key)
   {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
 
     return true;
   }
 }
 
-export default Client_Cache_Local;
+export default Client_Cache_Session;
