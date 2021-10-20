@@ -5,7 +5,6 @@ class Client_Cache_Firestore extends Client_Cache
   constructor(config)
   {
     super(config);
-    this.entries = {};
   }
   
   open(app)

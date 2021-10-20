@@ -28,12 +28,19 @@
       {
         await db_cache.open();
 
-        const firebase_app_name = "de-cms";
-        firebase.initializeApp(Fb_Config, firebase_app_name);
-        const app = firebase.app(firebase_app_name);
-        const auth = firebase.auth(app);
-        await auth.signInAnonymously();
-        firestore_cache.open(app);
+        const firestore_app_name = "de-cms";
+        firebase.initializeApp(Fb_Config.cms, firestore_app_name);
+        const firestore_app = firebase.app(firestore_app_name);
+        const firestore_auth = firebase.auth(firestore_app);
+        await firestore_auth.signInAnonymously();
+        firestore_cache.open(firestore_app);
+
+        const firebase_app_name = "gato-gang";
+        firebase.initializeApp(Fb_Config.gg, firebase_app_name);
+        const firebase_app = firebase.app(firebase_app_name);
+        const firebase_auth = firebase.auth(firebase_app);
+        await firebase_auth.signInAnonymously();
+        realtime_cache.open(firebase_app);
 
         document.getElementById("exec_btn").addEventListener("click", Exec_Btn_Click);
         document.getElementById("exec2_btn").addEventListener("click", Exec2_Btn_Click);
@@ -98,7 +105,7 @@
 
       async function Some_Function_Client_Realtime_Cache(a)
       {
-        const key = "someFunction." + a;
+        const key = "someFunction-" + a;
         const res = await realtime_cache.use(key, () => Some_Function(a), 10000);
         return res;
       }
