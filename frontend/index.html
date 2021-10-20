@@ -28,15 +28,15 @@
       {
         await db_cache.open();
 
-        const firestore_app_name = "de-cms";
-        firebase.initializeApp(Fb_Config.cms, firestore_app_name);
+        const firestore_app_name = "app1";
+        firebase.initializeApp(Fb_Config.app1, firestore_app_name);
         const firestore_app = firebase.app(firestore_app_name);
         const firestore_auth = firebase.auth(firestore_app);
         await firestore_auth.signInAnonymously();
         firestore_cache.open(firestore_app);
 
-        const firebase_app_name = "gato-gang";
-        firebase.initializeApp(Fb_Config.gg, firebase_app_name);
+        const firebase_app_name = "app2";
+        firebase.initializeApp(Fb_Config.app2, firebase_app_name);
         const firebase_app = firebase.app(firebase_app_name);
         const firebase_auth = firebase.auth(firebase_app);
         await firebase_auth.signInAnonymously();
