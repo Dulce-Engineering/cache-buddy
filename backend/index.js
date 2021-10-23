@@ -1,9 +1,8 @@
 const express = require('express');
-const CacheMem = require('../src/Server_Cache_Mem');
-const CacheSqlite = require('../src/Server_Cache_Sqlite');
+const Cache = require('../src');
 
-const cache = new CacheMem({expiryMillis: 10000});
-const cacheSqlite = new CacheSqlite({filename: ":memory:", expiryMillis: 10000});
+const cache = new Cache.Server_Cache_Mem({expiryMillis: 10000});
+const cacheSqlite = new Cache.Server_Cache_Sqlite({filename: ":memory:", expiryMillis: 10000});
 
 cacheSqlite.open();
 
