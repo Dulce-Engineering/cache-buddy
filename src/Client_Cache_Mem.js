@@ -41,6 +41,13 @@ class Client_Cache_Mem extends Client_Cache
 
     return true;
   }
+
+  delete(key)
+  {
+    const entries = this.entries;
+    delete entries[key];
+    return true;
+  }
 }
 
 export default Client_Cache_Mem;

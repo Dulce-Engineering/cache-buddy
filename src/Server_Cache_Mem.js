@@ -41,6 +41,13 @@ class CacheMem extends CacheBase
 
     return true;
   }
+
+  delete(key)
+  {
+    const entries = this.entries;
+    delete entries[key];
+    return true;
+  }
 }
 
 module.exports = CacheMem;

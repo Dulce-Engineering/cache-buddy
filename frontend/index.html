@@ -50,6 +50,7 @@
         document.getElementById("exec6_btn").addEventListener("click", Exec6_Btn_Click);
         document.getElementById("exec7_btn").addEventListener("click", Exec7_Btn_Click);
         document.getElementById("exec8_btn").addEventListener("click", Exec8_Btn_Click);
+        document.getElementById("exec9_btn").addEventListener("click", Exec9_Btn_Click);
       }
 
       async function Some_Function(a)
@@ -59,9 +60,18 @@
         return json_res;
       }
 
+      // Server Cached Functions ==================================================================
+
       async function Some_Function_Server_Mem_Cache(a)
       {
         const http_res = await fetch("someFunctionCached?a=" + a);
+        const json_res = await http_res.json();
+        return json_res;
+      }
+
+      async function Some_Function_Server_Sqlite_Cache(a)
+      {
+        const http_res = await fetch("someFunctionCachedSqlite?a=" + a);
         const json_res = await http_res.json();
         return json_res;
       }
@@ -183,6 +193,15 @@
         const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
         document.getElementById("exec8_res").innerText = text;
       }
+
+      async function Exec9_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec9_res").innerText = "Executing...";
+        const fn_res = await Some_Function_Server_Sqlite_Cache(2000000000);
+        const text = "Function executed in " + (Date.now()-startTime) + " milliseconds";
+        document.getElementById("exec9_res").innerText = text;
+      }
     </script>
   </head>
   <body>
@@ -194,6 +213,10 @@
       <li>Call backend function with server-side memory cache. 
         <button id="exec2_btn">Execute</button> 
         <span id="exec2_res"></span>
+      </li>
+      <li>Call backend function with server-side Sqlite cache. 
+        <button id="exec9_btn">Execute</button> 
+        <span id="exec9_res"></span>
       </li>
       <li>Call backend function with client-side memory cache. 
         <button id="exec3_btn">Execute</button> 

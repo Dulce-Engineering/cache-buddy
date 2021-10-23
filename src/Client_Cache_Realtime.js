@@ -17,6 +17,11 @@ class Client_Cache_Realtime extends Client_Cache
     return this.db.ref("cache/" + key).set(value);
   }
 
+  Realtime_Delete(key)
+  {
+    return this.db.ref("cache/" + key).remove();
+  }
+
   async Realtime_Get(key)
   {
     let entry;
@@ -62,6 +67,12 @@ class Client_Cache_Realtime extends Client_Cache
     const entry = { data, expireTimeMillis, execMillis };
     await this.Realtime_Set(key, entry);
 
+    return true;
+  }
+
+  async delete(key)
+  {
+    await this.Realtime_Delete(key);
     return true;
   }
 }

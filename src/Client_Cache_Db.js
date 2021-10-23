@@ -32,6 +32,22 @@ class Client_Cache_Db extends Client_Cache
     return res;
   }
 
+  IndexedDb_Delete(key)
+  {
+    const trans = this.db.transaction("cache", "readwrite");
+    const table = trans.objectStore("cache");
+
+    const res = new Promise(Exec);
+    function Exec(resolve_fn, reject_fn)
+    {
+      const db_req = table.delete(key);
+      db_req.onerror = () => reject_fn();
+      db_req.onsuccess = () => resolve_fn(true);
+    }
+
+    return res;
+  }
+
   IndexedDb_Set(key, value)
   {
     const trans = this.db.transaction("cache", "readwrite");
@@ -103,6 +119,11 @@ class Client_Cache_Db extends Client_Cache
     await this.IndexedDb_Set(key, entry);
 
     return true;
+  }
+
+  delete(key)
+  {
+    return this.IndexedDb_Delete(key);
   }
 }
 

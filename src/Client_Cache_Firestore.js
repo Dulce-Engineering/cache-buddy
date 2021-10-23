@@ -18,6 +18,12 @@ class Client_Cache_Firestore extends Client_Cache
     await table.doc(key).set(value);
   }
 
+  async Firestore_Delete(key)
+  {
+    const table = this.db.collection("cache");
+    await table.doc(key).delete();
+  }
+
   async Firestore_Get(key)
   {
     let entry;
@@ -65,6 +71,12 @@ class Client_Cache_Firestore extends Client_Cache
     const entry = { data, expireTimeMillis, execMillis };
     await this.Firestore_Set(key, entry);
 
+    return true;
+  }
+
+  async delete(key)
+  {
+    await this.Firestore_Delete(key);
     return true;
   }
 }
