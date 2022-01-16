@@ -6,9 +6,10 @@ class Client_Cache
     this.forceRefresh = false;
     this.expiryMillis = config?.expiryMillis || 1000*60*30; // 30 min
     this.cacheOn = config?.cacheOn!=null ? config.cacheOn : true;
+    this.showLog = config?.showLog!=null ? config.showLog : true;
   }
 
-  async use(key, calcFn, expiryMillis)
+  async use(key, calcFn, expiryMillis, map_fn)
   {
     let res;
 
@@ -16,10 +17,14 @@ class Client_Cache
     {
       if (!this.forceRefresh && await this.hasData(key))
       {
+        this.log("cache hit");
         res = await this.get(key);
+        if (map_fn)
+          res = map_fn(res);
       }
       else
       {
+        this.log("cache miss");
         const startTime = Date.now();
         res = await calcFn();
         const execMillis = Date.now() - startTime;
@@ -60,6 +65,15 @@ class Client_Cache
   async set(key, data, execMillis, expiryMillis)
   {
     return false;
+  }
+
+  log()
+  {
+    if (this.showLog)
+    {
+      const label = "Client_Cache: ";
+      console.log(label, ...arguments);
+    }
   }
 }
 
