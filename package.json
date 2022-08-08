@@ -4,6 +4,7 @@
   "description": "Javascript class to assist with frontend and backend caching. No dependencies.",
   "main": "backend/index.js",
   "scripts": {
+    "start": "node backend\\index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -1,18 +1,25 @@
 const express = require('express');
 const Cache = require('../src');
 
-const cache = new Cache.Server_Cache_Mem({expiryMillis: 10000});
-const cacheSqlite = new Cache.Server_Cache_Sqlite({filename: ":memory:", expiryMillis: 10000});
+main();
 
-cacheSqlite.open();
+function main()
+{
+  const cache = new Cache.Server_Cache_Mem({expiryMillis: 10000});
+  const cacheSqlite = new Cache.Server_Cache_Sqlite({filename: ":memory:", expiryMillis: 10000});
 
-const app = express();
-app.get('/someFunction', getSomeFunction);
-app.get('/someFunctionCached', getSomeFunctionCached);
-app.get('/someFunctionCachedSqlite', getSomeFunctionCachedSqlite);
-app.use(express.static('frontend'));
-app.use(express.static('src'));
-app.listen(80);
+  cacheSqlite.open();
+
+  const app = express();
+  app.get('/someFunction', getSomeFunction);
+  app.get('/someFunctionCached', getSomeFunctionCached);
+  app.get('/someFunctionCachedSqlite', getSomeFunctionCachedSqlite);
+  app.use(express.static('frontend'));
+  app.use(express.static('src'));
+  app.listen(80);
+
+  console.log("Server started at http://localhost");
+}
 
 function getSomeFunction(req, res)
 {
