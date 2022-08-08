@@ -27,7 +27,7 @@
       async function Main()
       {
         await db_cache.open();
-
+        
         const firestore_app_name = "app1";
         firebase.initializeApp(Fb_Config.app1, firestore_app_name);
         const firestore_app = firebase.app(firestore_app_name);
@@ -41,11 +41,12 @@
         const firebase_auth = firebase.auth(firebase_app);
         await firebase_auth.signInAnonymously();
         realtime_cache.open(firebase_app);
-
+        
         document.getElementById("exec_btn").addEventListener("click", Exec_Btn_Click);
         document.getElementById("exec2_btn").addEventListener("click", Exec2_Btn_Click);
         document.getElementById("exec3_btn").addEventListener("click", Exec3_Btn_Click);
         document.getElementById("exec4_btn").addEventListener("click", Exec4_Btn_Click);
+        document.getElementById("exec4a_btn").addEventListener("click", Exec4a_Btn_Click);
         document.getElementById("exec5_btn").addEventListener("click", Exec5_Btn_Click);
         document.getElementById("exec6_btn").addEventListener("click", Exec6_Btn_Click);
         document.getElementById("exec7_btn").addEventListener("click", Exec7_Btn_Click);
@@ -158,6 +159,35 @@
         document.getElementById("exec4_res").innerText = text;
       }
 
+      async function Exec4a_Btn_Click()
+      {
+        const startTime = Date.now();
+        document.getElementById("exec4a_res").innerText = "Executing...";
+
+        const a = 2000000000;
+        const key = "someFunction." + a;
+        local_cache.Use_Update(key, Calc_Fn, Update_Fn, 10000);
+
+        async function Calc_Fn()
+        {
+          const val = await Some_Function(a);
+          let text = "Calculated new value. ";
+          text += "Value = " + val.funRes + ". ";
+          const br = document.createElement("br");
+          document.getElementById("exec4a_res").append(br, text);
+          return val;
+        }
+
+        function Update_Fn(val, is_latest)
+        {
+          let text = "Function executed in " + (Date.now()-startTime) + " milliseconds. ";
+          text += is_latest ? "Got latest data." : "Got stale data. ";
+          text += "Value = " + val.funRes + ". ";
+          const br = document.createElement("br");
+          document.getElementById("exec4a_res").append(br, text);
+        }
+      }
+
       async function Exec5_Btn_Click()
       {
         const startTime = Date.now();
@@ -225,6 +255,10 @@
       <li>Call backend function with client-side Local Storage cache. 
         <button id="exec4_btn">Execute</button> 
         <span id="exec4_res"></span>
+      </li>
+      <li>Call backend function with client-side Local Storage cache and pre-update. 
+        <button id="exec4a_btn">Execute</button> 
+        <span id="exec4a_res"></span>
       </li>
       <li>Call backend function with client-side Session Storage cache. 
         <button id="exec5_btn">Execute</button> 

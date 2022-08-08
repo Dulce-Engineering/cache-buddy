@@ -9,7 +9,7 @@ class Client_Cache
     this.showLog = config?.showLog!=null ? config.showLog : true;
   }
 
-  async use(key, calcFn, expiryMillis, map_fn)
+  async use(key, calc_fn, expiry_millis, map_fn)
   {
     let res;
 
@@ -26,22 +26,22 @@ class Client_Cache
       {
         this.log("cache miss");
         const startTime = Date.now();
-        res = await calcFn();
+        res = await calc_fn();
         const execMillis = Date.now() - startTime;
         
         await this.delete(key);
 
-        if (!expiryMillis)
+        if (!expiry_millis)
         {
-          expiryMillis = this.expiryMillis;
+          expiry_millis = this.expiryMillis;
         }    
-        await this.set(key, res, execMillis, expiryMillis);
+        await this.set(key, res, execMillis, expiry_millis);
         this.forceRefresh = false;
       }
     }
     else
     {
-      res = await calcFn();
+      res = await calc_fn();
     }
 
     return res;
@@ -62,7 +62,7 @@ class Client_Cache
     return false;
   }
 
-  async set(key, data, execMillis, expiryMillis)
+  async set(key, data, execMillis, expiry_millis)
   {
     return false;
   }

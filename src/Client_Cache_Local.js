@@ -7,23 +7,49 @@ class Client_Cache_Local extends Client_Cache
     super(config);
   }
 
-  LocalStorage_Get(key)
+  async Use_Update(key, calc_fn, update_fn, expiry_millis)
   {
-    let res;
+    let data = null;
 
-    const entry_str = localStorage.getItem(key);
-    if (entry_str)
+    if (this.cacheOn)
     {
-      res = JSON.parse(entry_str);
-    }
+      const has_curr_data = await this.hasData(key);
 
-    return res;
+      if (this.Has_Entry(key))
+      {
+        data = await this.get(key);
+        update_fn(data, has_curr_data);
+      }
+
+      if (!has_curr_data || this.forceRefresh)
+      {
+        const startTime = Date.now();
+        data = await calc_fn();
+        const execMillis = Date.now() - startTime;
+
+        update_fn(data, true);
+        await this.delete(key);
+
+        if (expiry_millis == null || expiry_millis == undefined)
+        {
+          expiry_millis = this.expiryMillis;
+        }
+        await this.set(key, data, execMillis, expiry_millis);
+      }
+    }
+    else
+    {
+      data = await calc_fn();
+      update_fn(data, true);
+    }
   }
+
+  // overrides ====================================================================================
 
   async hasData(key)
   {
     let res = false;
-    const entry = this.LocalStorage_Get(key);
+    const entry = this.Get(key);
 
     if (entry && entry.expireTimeMillis > Date.now())
     {
@@ -37,7 +63,7 @@ class Client_Cache_Local extends Client_Cache
   {
     let res;
 
-    const entry = this.LocalStorage_Get(key);
+    const entry = this.Get(key);
     if (entry)
     {
       res = entry.data;
@@ -50,17 +76,55 @@ class Client_Cache_Local extends Client_Cache
   {
     const expireTimeMillis = Date.now() + expiryMillis;
     const entry = { data, expireTimeMillis, execMillis };
-    const entry_str = JSON.stringify(entry)
-    localStorage.setItem(key, entry_str);
+    this.Set(key, entry);
 
     return true;
   }
-  
+
   async delete(key)
   {
     localStorage.removeItem(key);
 
     return true;
+  }
+  
+  // raw access ===================================================================================
+
+  Has_Entry(key)
+  {
+    return localStorage.getItem(key) == null ? false : true;
+  }
+
+  Is_Expired(key)
+  {
+    let res = false;
+    const entry = this.Get(key);
+
+    if (entry && entry.expireTimeMillis > Date.now())
+    {
+      res = true;
+    }
+
+    return res;
+  }
+
+  Get(key)
+  {
+    let res = null;
+
+    const entry_str = localStorage.getItem(key);
+    if (entry_str)
+    {
+      res = JSON.parse(entry_str);
+    }
+
+    return res;
+  }
+
+  Set(key, data)
+  {
+    const entry_str = JSON.stringify(data)
+    localStorage.setItem(key, entry_str);
   }
 }
 
